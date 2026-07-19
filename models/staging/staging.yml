@@ -19,17 +19,6 @@ models:
       - name: pan_number
         tests: [not_null]
 
-  - name: stg_bureau_pulls
-    columns:
-      - name: cibil_score
-        tests:
-          - accepted_range:
-              arguments:
-                min_value: 300
-                max_value: 900
-                inclusive: true
-              config:
-                severity: warn
 
   - name: stg_loan_applications
     columns:

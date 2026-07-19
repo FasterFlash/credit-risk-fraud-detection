@@ -39,8 +39,6 @@ windowed as (
 
         -- trailing 30-day average, EXCLUDING the current row so a fraud spike
         -- doesn't dilute its own baseline
-        -- trailing 30-day average, EXCLUDING the current row so a fraud spike
-        -- doesn't dilute its own baseline
         -- NOTE: both frame bounds must share the same interval granularity in
         -- Spark SQL, so 30 days is expressed in seconds (30*24*60*60) to match
         -- the 1-second bound, rather than mixing "days" and "seconds" literals.
@@ -50,14 +48,20 @@ windowed as (
             range between interval 2592000 seconds preceding and interval 1 seconds preceding
         ) as avg_amount_30d,
 
-        -- first-ever occurrence of this (customer, device) / (customer, category) pair
+        -- first-ever occurrence of this (customer, device) pair -- no time window,
+        -- matches source's persistent device_history set
         min(transaction_timestamp) over (
             partition by customer_id, device_id
         ) as first_seen_device_ts,
 
-        min(transaction_timestamp) over (
+        -- trailing 90-day count of this (customer, merchant_category) pair --
+        -- matches source's merchant_category_history (a rolling ~90-day window),
+        -- NOT "ever seen" like device_id above
+        count(*) over (
             partition by customer_id, merchant_category
-        ) as first_seen_category_ts,
+            order by transaction_timestamp
+            range between interval 7776000 seconds preceding and interval 1 seconds preceding
+        ) as prior_category_count_90d,
 
         -- previous transaction timestamp for this customer
         lag(transaction_timestamp) over (
@@ -97,7 +101,7 @@ select
 
     case
         when merchant_category is null then false
-        else transaction_timestamp = first_seen_category_ts
+        else coalesce(prior_category_count_90d, 0) = 0
     end as is_new_merchant_category,
 
     hour(transaction_timestamp) >= 23 or hour(transaction_timestamp) <= 4

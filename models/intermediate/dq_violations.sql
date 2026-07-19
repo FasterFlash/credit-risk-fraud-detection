@@ -23,6 +23,18 @@ underage_customers as (
     where date_of_birth > current_date() - interval 18 years
 ),
 
+duplicate_txn_diff_amount as (
+    select
+        any_value(transaction_id) as record_id,
+        'transactions' as source_table,
+        'duplicate_txn_diff_amount' as violation_type,
+        concat('transaction_id ', transaction_id, ' has ', count(distinct amount), ' distinct amounts across ', count(*), ' rows') as violation_details,
+        max(created_at) as source_created_at
+    from {{ ref('stg_transactions') }}
+    group by transaction_id
+    having count(*) > 1
+),
+
 cibil_out_of_range as (
     select
         bureau_pull_id as record_id,
@@ -93,6 +105,7 @@ unioned as (
     union all select * from invalid_ifsc
     union all select * from utr_collisions
     union all select * from negative_amounts
+    union all select * from duplicate_txn_diff_amount
 )
 
 select
