@@ -1,0 +1,26 @@
+-- stg_nach_bounces.sql
+select
+    cast(bounce_id as string)                  as bounce_id,
+    cast(loan_account_id as string)            as loan_account_id,
+    cast(repayment_event_id as string)         as repayment_event_id,
+    cast(customer_id as string)                as customer_id,
+    cast(nach_debit_date as date)              as nach_debit_date,
+    cast(nach_debit_timestamp as timestamp)    as nach_debit_timestamp,
+    cast(amount_attempted as double)           as amount_attempted,
+    cast(return_date as date)                  as return_date,
+    cast(return_reason as string)              as return_reason,
+    cast(return_code as string)                as return_code,
+    cast(bank_charges_applied as double)       as bank_charges_applied,
+    cast(gst_on_charges as double)             as gst_on_charges,
+    cast(customer_notified_sms as boolean)     as customer_notified_sms,
+    cast(customer_notified_email as boolean)   as customer_notified_email,
+    cast(retry_attempted as boolean)           as retry_attempted,
+    cast(retry_date as date)                   as retry_date,
+    cast(retry_outcome as string)              as retry_outcome,
+    cast(consecutive_bounce_count as int)      as consecutive_bounce_count,
+    cast(is_first_bounce as boolean)           as is_first_bounce,
+    cast(account_balance_at_debit as double)   as account_balance_at_debit,
+    cast(shortfall_at_bounce as double)        as shortfall_at_bounce,
+    cast(is_severe_bounce as boolean)          as is_severe_bounce,
+    cast(created_at as timestamp)              as created_at
+from {{ source('bronze', 'nach_bounces') }}

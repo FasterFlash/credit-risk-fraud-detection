@@ -1,0 +1,25 @@
+-- stg_cdc_customer_updates.sql
+select
+    cast(cdc_event_id as string)               as cdc_event_id,
+    cast(__change_type as string)              as change_type,
+    cast(__commit_timestamp as timestamp)      as commit_timestamp,
+    cast(__source_table as string)             as source_table,
+    cast(__sequence_number as bigint)          as sequence_number,
+    cast(customer_id as string)                as customer_id,
+    cast(changed_fields as string)             as changed_fields,
+    cast(before_employment_type as string)     as before_employment_type,
+    cast(before_monthly_income as double)      as before_monthly_income,
+    cast(before_employer_name as string)       as before_employer_name,
+    cast(before_city as string)                as before_city,
+    cast(before_kyc_status as string)          as before_kyc_status,
+    cast(before_customer_segment as string)    as before_customer_segment,
+    cast(after_employment_type as string)      as after_employment_type,
+    cast(after_monthly_income as double)       as after_monthly_income,
+    cast(after_employer_name as string)        as after_employer_name,
+    cast(after_city as string)                 as after_city,
+    cast(after_kyc_status as string)           as after_kyc_status,
+    cast(after_customer_segment as string)     as after_customer_segment,
+    cast(change_reason as string)              as change_reason,
+    cast(triggered_by as string)               as triggered_by,
+    cast(file_batch_timestamp as timestamp)    as file_batch_timestamp
+from {{ source('bronze', 'cdc_customer_updates') }}

@@ -1,0 +1,26 @@
+-- stg_cdc_loan_status.sql
+select
+    cast(cdc_event_id as string)               as cdc_event_id,
+    cast(__change_type as string)              as change_type,
+    cast(__commit_timestamp as timestamp)      as commit_timestamp,
+    cast(__source_table as string)             as source_table,
+    cast(__sequence_number as bigint)          as sequence_number,
+    cast(loan_account_id as string)            as loan_account_id,
+    cast(customer_id as string)                as customer_id,
+    cast(before_loan_status as string)         as before_loan_status,
+    cast(before_current_dpd as int)            as before_current_dpd,
+    cast(before_outstanding_total as double)   as before_outstanding_total,
+    cast(before_consecutive_missed as int)     as before_consecutive_missed,
+    cast(before_updated_at as timestamp)       as before_updated_at,
+    cast(after_loan_status as string)          as after_loan_status,
+    cast(after_current_dpd as int)             as after_current_dpd,
+    cast(after_outstanding_total as double)    as after_outstanding_total,
+    cast(after_consecutive_missed as int)      as after_consecutive_missed,
+    cast(after_updated_at as timestamp)        as after_updated_at,
+    cast(change_reason as string)              as change_reason,
+    cast(triggered_by as string)               as triggered_by,
+    cast(is_npa_trigger as boolean)            as is_npa_trigger,
+    cast(is_month_end_batch as boolean)        as is_month_end_batch,
+    cast(file_batch_id as string)              as file_batch_id,
+    cast(file_batch_timestamp as timestamp)    as file_batch_timestamp
+from {{ source('bronze', 'cdc_loan_status') }}

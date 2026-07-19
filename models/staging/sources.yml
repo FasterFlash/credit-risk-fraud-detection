@@ -1,0 +1,41 @@
+version: 2
+
+sources:
+  - name: bronze
+    database: credit_risk_fraud_detection
+    schema: bronze
+    tables:
+      - name: customers
+        description: "Customer master records — PII, employment, persona, lifecycle status."
+      - name: kyc_profiles
+        description: "KYC verification detail per customer."
+      - name: credit_profiles
+        description: "Point-in-time bureau/credit state per customer, updated on hard pulls and DPD events."
+      - name: loan_applications
+        description: "Loan/credit card applications as submitted, before underwriting decision."
+      - name: bureau_pulls
+        description: "Hard credit bureau pulls per application, includes CIBIL score at time of pull."
+      - name: underwriting_decisions
+        description: "APPROVED/REJECTED decisions with approved terms or rejection codes."
+      - name: disbursements
+        description: "Loan disbursement events — mints loan_account_id, UTR, NACH registration."
+      - name: repayment_schedules
+        description: "Full planned amortization schedule per loan, generated once at disbursement."
+      - name: repayment_events
+        description: "Actual monthly EMI outcome per loan — paid/missed/partial."
+      - name: nach_bounces
+        description: "Failed NACH auto-debit attempts, with RBI/NPCI return codes."
+      - name: transactions
+        description: "All customer bank account transactions, ~22M rows, includes pre-computed fraud signal columns."
+      - name: loan_personal_detail
+        description: "Personal loan type-specific detail, 1:1 with loan_account_id."
+      - name: loan_home_detail
+        description: "Home loan type-specific detail — LTV, property, rate reset info."
+      - name: loan_auto_detail
+        description: "Auto loan type-specific detail — vehicle, depreciation."
+      - name: credit_card_detail
+        description: "Credit card account state — billing cycle, revolving balance, utilization."
+      - name: cdc_loan_status
+        description: "CDC stream of loan_status changes — SCD2 source for dim_loan_account."
+      - name: cdc_customer_updates
+        description: "CDC stream of customer master field changes — SCD2 source for dim_customer."

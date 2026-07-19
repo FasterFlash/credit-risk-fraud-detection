@@ -1,0 +1,26 @@
+-- stg_bureau_pulls.sql
+select
+    cast(bureau_pull_id as string)             as bureau_pull_id,
+    cast(customer_id as string)                as customer_id,
+    cast(application_id as string)             as application_id,
+    cast(pull_type as string)                  as pull_type,
+    cast(pull_timestamp as timestamp)          as pull_timestamp,
+    cast(pull_date as date)                    as pull_date,
+    cast(bureau_name as string)                as bureau_name,
+    cast(cibil_score as int)                   as cibil_score,
+    cast(is_new_to_credit as boolean)          as is_new_to_credit,
+    cast(total_active_loans as int)            as total_active_loans,
+    cast(total_active_credit_cards as int)     as total_active_credit_cards,
+    cast(total_outstanding_amount as double)   as total_outstanding_amount,
+    cast(total_overdue_amount as double)       as total_overdue_amount,
+    cast(hard_pull_count_last_30d as int)      as hard_pull_count_last_30d,
+    cast(hard_pull_count_last_60d as int)      as hard_pull_count_last_60d,
+    cast(hard_pull_count_last_90d as int)      as hard_pull_count_last_90d,
+    cast(months_since_last_default as int)     as months_since_last_default,
+    cast(max_dpd_last_12m as int)              as max_dpd_last_12m,
+    cast(max_dpd_ever as int)                  as max_dpd_ever,
+    cast(written_off_accounts as int)          as written_off_accounts,
+    cast(settled_accounts as int)              as settled_accounts,
+    cast(report_date as date)                  as report_date,
+    cast(created_at as timestamp)              as created_at
+from {{ source('bronze', 'bureau_pulls') }}
