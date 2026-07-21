@@ -11,7 +11,6 @@ Exits 0 on success (whether things already existed or were just created),
 non-zero on any failure -- the Workflow DAG gates the downstream
 `ingest_bronze` notebook task on this task succeeding.
 """
-
 import sys
 from databricks.sdk import WorkspaceClient
 from databricks.sdk.errors import NotFound
