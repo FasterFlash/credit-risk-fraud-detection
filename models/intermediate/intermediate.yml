@@ -1,0 +1,32 @@
+version: 2
+
+models:
+  - name: int_transactions_features
+    columns:
+      - name: velocity_1hr
+        tests:
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: ">= 1"   # always includes itself, can never be 0
+      - name: velocity_24hr
+        tests:
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: ">= velocity_1hr"   # 24hr window can never be smaller than 1hr window
+      - name: amount_vs_30d_avg_ratio
+        tests:
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: "between -1000 and 1000"   # catches divide-by-near-zero blowups
+              config: {severity: warn}
+      - name: time_since_last_txn_mins
+        tests:
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: ">= 0"
+              config: {severity: warn}   # null is fine (first txn), negative would mean a real bug
+      - name: transaction_id
+        tests:
+          - not_null
+          - unique:
+              config: {severity: warn}   # duplicate_txn_diff_amount injection (0.5%)

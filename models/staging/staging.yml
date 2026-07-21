@@ -1,0 +1,94 @@
+version: 2
+
+models:
+  - name: stg_customers
+    columns:
+      - name: customer_id
+        tests:
+          - not_null
+          - unique:
+              config:
+                severity: warn
+      - name: date_of_birth
+        tests:
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: "<= current_date() - interval 18 years"
+              config:
+                severity: warn
+      - name: pan_number
+        tests: [not_null]
+
+
+  - name: stg_loan_applications
+    columns:
+      - name: customer_id
+        tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: applied_amount
+        tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: loan_type
+        tests:
+          - not_null:
+              config:
+                severity: warn
+
+  - name: stg_disbursements
+    columns:
+      - name: utr_number
+        tests:
+          - unique:
+              config:
+                severity: warn
+      - name: beneficiary_ifsc
+        tests:
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: "rlike '^[A-Z]{4}0[A-Z0-9]{6}$'"
+              config:
+                severity: warn
+
+  - name: stg_transactions
+    columns:
+      - name: transaction_id
+        tests: [not_null]
+      - name: amount
+        tests:
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: "> 0"
+              config:
+                severity: warn
+      - name: transaction_timestamp
+        tests:
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: "<= current_timestamp()"
+              config:
+                severity: warn
+
+  - name: stg_loan_home_detail
+    columns:
+      - name: ltv_ratio
+        tests:
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: "<= 0.90"
+              config:
+                severity: warn
+
+  - name: stg_cdc_customer_updates
+    columns:
+      - name: customer_id
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_customers')
+                field: customer_id
+              config:
+                severity: warn

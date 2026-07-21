@@ -1,0 +1,26 @@
+-- stg_loan_auto_detail.sql
+select
+    cast(loan_account_id as string)            as loan_account_id,
+    cast(vehicle_category as string)           as vehicle_category,
+    cast(vehicle_make as string)               as vehicle_make,
+    cast(vehicle_model as string)              as vehicle_model,
+    cast(manufacturing_year as int)            as manufacturing_year,
+    cast(is_new_vehicle as boolean)            as is_new_vehicle,
+    cast(ex_showroom_price as double)          as ex_showroom_price,
+    cast(on_road_price as double)              as on_road_price,
+    cast(down_payment_amount as double)        as down_payment_amount,
+    cast(ltv_ratio as double)                  as ltv_ratio,
+    cast(chassis_number as string)             as chassis_number,
+    cast(engine_number as string)              as engine_number,
+    cast(registration_number as string)        as registration_number,
+    cast(hypothecation_noted_in_rc as boolean) as hypothecation_noted_in_rc,
+    cast(dealer_code as string)                as dealer_code,
+    cast(dealer_name as string)                as dealer_name,
+    cast(dealer_city as string)                as dealer_city,
+    cast(insurance_policy_number as string)    as insurance_policy_number,
+    cast(insurance_provider as string)         as insurance_provider,
+    cast(insurance_expiry_date as date)        as insurance_expiry_date,
+    cast(current_market_value as double)       as current_market_value,
+    cast(depreciation_rate_annual as double)   as depreciation_rate_annual,
+    cast(created_at as timestamp)              as created_at
+from {{ source('bronze', 'loan_auto_detail') }}
