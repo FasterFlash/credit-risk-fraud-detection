@@ -86,6 +86,52 @@ utr_collisions as (
     having count(*) > 1
 ),
 
+ltv_breach as (
+    select
+        loan_account_id as record_id,
+        'loan_home_detail' as source_table,
+        'ltv_breach' as violation_type,
+        concat('ltv_ratio ', cast(ltv_ratio as string), ' — exceeds RBI 0.90 cap') as violation_details,
+        created_at as source_created_at
+    from {{ ref('stg_loan_home_detail') }}
+    where ltv_ratio > 0.90
+),
+
+future_timestamp as (
+    select
+        transaction_id as record_id,
+        'transactions' as source_table,
+        'future_timestamp' as violation_type,
+        concat('transaction_timestamp ', cast(transaction_timestamp as string), ' — occurs after current time') as violation_details,
+        created_at as source_created_at
+    from {{ ref('stg_transactions') }}
+    where transaction_timestamp > current_timestamp()
+),
+
+orphan_cdc as (
+    select
+        cdc.cdc_event_id as record_id,
+        'cdc_customer_updates' as source_table,
+        'orphan_cdc_customer' as violation_type,
+        concat('customer_id ', cdc.customer_id, ' referenced in CDC but not found in customers dimension') as violation_details,
+        cdc.file_batch_timestamp as source_created_at
+    from {{ ref('stg_cdc_customer_updates') }} cdc
+    left join {{ ref('stg_customers') }} c
+        on cdc.customer_id = c.customer_id
+    where c.customer_id is null
+),
+
+state_jump_violation as (
+    select
+        cdc_event_id as record_id,
+        'cdc_loan_status' as source_table,
+        'state_jump_violation' as violation_type,
+        concat('before_loan_status ', coalesce(before_loan_status, 'NULL'), ' -> after_loan_status ', after_loan_status, ' is not a valid transition') as violation_details,
+        commit_timestamp as source_created_at
+    from {{ ref('int_loan_status_jumps') }}
+    where is_state_jump_violation
+),
+
 negative_amounts as (
     select
         transaction_id as record_id,
@@ -106,6 +152,10 @@ unioned as (
     union all select * from utr_collisions
     union all select * from negative_amounts
     union all select * from duplicate_txn_diff_amount
+    union all select * from ltv_breach
+    union all select * from future_timestamp
+    union all select * from orphan_cdc
+    union all select * from state_jump_violation
 )
 
 select
