@@ -13,6 +13,7 @@ select
     merchant_category,
     device_id,
     channel,
+    distance_from_home_km,
     velocity_1hr,
     velocity_24hr,
     amount_vs_30d_avg_ratio,

@@ -12,6 +12,7 @@ with base as (
         merchant_category,
         device_id,
         channel,
+        distance_from_home_km,
         is_fraud,
         fraud_type,
         fraud_scenario_id
@@ -85,7 +86,7 @@ select
     merchant_category,
     device_id,
     channel,
-
+    distance_from_home_km,
     velocity_1hr,
     velocity_24hr,
 
