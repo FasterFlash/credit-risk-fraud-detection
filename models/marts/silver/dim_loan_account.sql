@@ -12,6 +12,7 @@ with static_attrs as (
         ud.interest_rate_annual as interest_rate,
         ud.approved_tenure_months as tenure_months,
         ud.emi_amount,
+        ud.cibil_score_at_decision,
         d.disbursed_amount,
         d.nach_registration_status
     from {{ ref('stg_disbursements') }} d
@@ -55,6 +56,7 @@ select
     s.interest_rate,
     s.tenure_months,
     s.emi_amount,
+    s.cibil_score_at_decision,
     s.disbursed_amount,
     s.nach_registration_status,
     h.loan_status,
